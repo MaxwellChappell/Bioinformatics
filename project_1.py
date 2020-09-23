@@ -102,6 +102,19 @@ def test_rna_to_amino_acid():
     print(f"Empty RNA String Blank []: {(aa_1 == '[]')}")
     print(f"Incomplete RNA String []: {aa_2 == 'K[A]'}")
     print(f"All Letters Correct: {aa_3 == 'FFLLLLLLIIIMVVVVSSSSPPPPTTTTAAAAYY**HHQQNNKKDDEECC*WRRRRSSRRGGGG[]'}")
+    
+    #check the size of each amino acid sequence, should be 1 more than the average value array because of the terminal '*'
+    print("check the size of each amino acid sequence, should be 1 more than the average value array because of the terminal '*'")
+    
+    for amino_sequence in aa:
+        print(len(amino_sequence[1]))
+
+    print("\n")
+
+    print("check the size of the average value array, should be 1 less than the original amino acid sequence because we don't count the terminal '*'")
+    #check the size of the average value array, should be 1 less than the original amino acid sequence because we don't count the terminal '*'
+    for values in average_values_list:
+        print(len(values))
 
 '''
 Reads a Fasta formated file and converts each sequence to amino acids
@@ -117,24 +130,41 @@ def process_cases(file):
         cases_aa.append([case[0], rna_to_amino_acid(case[1])])
     return cases_rna, cases_aa
 
+'''
+Moves through the list of average hydrophobicity levels and flags those locations greator than the threshold
+@param threshold the number we select as the hydrophobicity threshold
+@param hydro_avg the list of of hydrophobicity lists
+'''
 def hydrophobic_regions(threshold,hydro_avg):
     regions = []
+    #loop through each sequences averages
     for sequence in hydro_avg:
         region = []
+        #variable to keep track of the array position
         count = 0
+        #loop through each value trying to find values greator than the threshold
         for value in sequence:
             if value > threshold:
+                #add the arrary position to the list
                 region.append(count)
             count += 1
         regions.append(region)
     return regions
 
+'''
+Looks through location list and determines if there are transmembrane domains contained within and if it is, explains
+why with hydrophobicity averages
+@param amino the list of amino acid sequences
+@param hydro_values the list of of hydrophobicity lists
+@param regions the list of lists of locations which meet the threshold
+@param threshold the number we select as the hydrophobicity threshold
+'''
 def print_transmembrane_info(amino, hydro_values, regions, threshold):
     for index in range(len(amino)):
         if len(regions[index]) > 0:
             print(str(amino[index][0]) + " may contain transmembrane domains, because of the following sequences containing hydrophobicity averages higer than " + str(threshold))
             for avg in regions[index]:
-                print(str(amino[index][1][avg:avg+20]) + ": " + str(hydro_values[index][avg]))
+                print(str(amino[index][1][avg:avg+20]) + ": " + str(round(hydro_values[index][avg],2)))
         else:
             print(str(amino[index][0]) + " does not appear to contain transmembrane domains, with no sections with hydrophobicity averages higher than " + str(threshold))
 
@@ -147,27 +177,14 @@ def main():
     rna, aa = process_cases(file_name)
     #this is our chosen window size
     window_size = 20
-
+    threshold = 1.6
     #calling average_hydrophobicity_values function
     average_values_list = average_hydrophobicity_values(aa, window_size)
-
-    
-    #check the size of each amino acid sequence, should be 1 more than the average value array because of the terminal '*'
-    print("check the size of each amino acid sequence, should be 1 more than the average value array because of the terminal '*'")
-    
-    for amino_sequence in aa:
-        print(len(amino_sequence[1]))
-
-    print("\n")
-
-    print("check the size of the average value array, should be 1 less than the original amino acid sequence because we don't count the terminal '*'")
-    #check the size of the average value array, should be 1 less than the original amino acid sequence because we don't count the terminal '*'
-    for values in average_values_list:
-        print(len(values))
-    threshold = 1.6
-    
+    #calculate hydrophobicity levels
     hydro_regions = hydrophobic_regions(threshold,average_values_list)
+    #print transmembrane domain results
     print_transmembrane_info(aa,average_values_list, hydro_regions, threshold)
+    #write amino acid translation to file
     wf.write_fasta("Assignment1AminoAcids.txt", aa)
 
 if __name__ == "__main__":
