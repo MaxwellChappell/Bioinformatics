@@ -17,8 +17,6 @@ Takes an RNA sequence and translates it into amino acids.
 @param early_stop: automatically set to true, if false, translation will continue past
     stop sequences
 @return: string of amino acids
-
-NOTE: does not currently check for start sequence, that will be added later.
 '''
 def rna_to_amino_acid(gene,early_stop = True):
     #Flag that says we are not done with our translation, will flip to exit the
@@ -189,4 +187,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
