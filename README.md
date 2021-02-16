@@ -8,6 +8,6 @@ amino_acid_dictionary.py: Contains a function that creates a dictionary of RNA -
 
 hydrophobicity_scale.py: Contains a function that creates a dictionary of Amino Acids with their respective hydrophobicity
 
-readfasta.py: Dr. Becks read FASTA code given to the Bio majors, reads FASTA from a file
+readfasta.py: Dr. Beck's read FASTA code given to the Bio majors, reads FASTA from a file
 
 writefasta.py: Code that writes FASTA fomated things to a txt
